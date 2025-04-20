@@ -1,0 +1,31 @@
+{
+  "name": "api_realmadrid_shop",
+  "version": "1.0.0",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Nguyenvanhaupd08293/API_Realmadrid_Shop.git"
+  },
+  "keywords": [
+    "0395807019hau"
+  ],
+  "author": "vanhau",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Nguyenvanhaupd08293/API_Realmadrid_Shop/issues"
+  },
+  "homepage": "https://github.com/Nguyenvanhaupd08293/API_Realmadrid_Shop#readme",
+  "description": "",
+  "dependencies": {
+    "express": "^4.21.2",
+    "express-handlebars": "^8.0.1",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  }
+}
