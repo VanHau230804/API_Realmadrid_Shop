@@ -4,6 +4,7 @@ const path = require('path');
 const { engine } = require('express-handlebars');
 const app = express();
 const port = 4000;
+const route = require('./routes/index');
 
 // Cấu hình template engine
 app.engine('hbs', engine({ extname: '.hbs' }));
@@ -16,22 +17,7 @@ app.use(express.json());
 app.use(morgan('combined'));
 
 // Route
-app.get('/', (req, res) => {
-  res.render('home', {
-    title: 'Trang chủ',
-    message: 'Chào mừng bạn đến với trang chủ!'
-  });
-});
-app.get('/news', (req, res) => {
-  res.render('news');
-});
-app.get('/search', (req, res) => {
-  res.render('search');
-});
-app.post('/search', (req, res) => {
-  console.log(req.body);
-  res.render('search');
-});
+route(app);
 app.listen(port, () => {
   console.log(`App listening at http://localhost:${port}`);
 });
