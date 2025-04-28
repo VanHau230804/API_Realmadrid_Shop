@@ -6,13 +6,12 @@ const app = express();
 const port = 4000;
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
-
 // Giả lập lại __dirname trong ES Module
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-
 import connectDB from './config/database.js';
 import kitRouter from './routes/Kit.js';
+import categoryRouter from './routes/Category.js';
 //connect to DB
 connectDB();
 // Cấu hình template engine
@@ -27,6 +26,7 @@ app.use(morgan('combined'));
 
 // Route
 app.use('/', kitRouter);
+app.use('/', categoryRouter);
 app.listen(port, () => {
   console.log(`App listening at http://localhost:${port}`);
 });

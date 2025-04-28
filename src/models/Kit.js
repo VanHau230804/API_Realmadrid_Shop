@@ -25,6 +25,9 @@ const KitSchema = new Schema(
     categoryID: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Category'
+    },
+    isActive: {
+      type: Number
     }
   },
   { timestamps: true, versionKey: false }
