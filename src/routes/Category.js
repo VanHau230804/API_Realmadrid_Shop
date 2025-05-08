@@ -7,7 +7,7 @@ import {
   deleteCategory
 } from '../app/controllers/CategoryController.js';
 router.get('/categories', getCategories);
-router.post('/category', addCategory);
+router.post('/categories', addCategory);
 router.put('/category/:id', updateCategory);
 router.delete('/category/:id', deleteCategory);
 export default router;

@@ -1,4 +1,5 @@
 import Category from '../../models/Category.js';
+import Kit from '../../models/Kit.js';
 export const getCategories = async (req, res) => {
   try {
     const categories = await Category.find();
@@ -38,10 +39,7 @@ export const updateCategory = async (req, res) => {
 
 export const deleteCategory = async (req, res) => {
   try {
-    await Product.updateMany(
-      { categoryID: req.params.id },
-      { categoryID: null }
-    );
+    await Kit.updateMany({ categoryID: req.params.id }, { categoryID: null });
     const data = await Category.deleteOne({ _id: req.params.id });
     res.status(200).json(data);
   } catch (error) {
