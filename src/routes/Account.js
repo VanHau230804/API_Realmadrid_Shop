@@ -3,9 +3,14 @@ const router = express.Router();
 import {
   getAccounts,
   addAccount,
-  deleteAccount
+  deleteAccount,
+  loginUser,
+  requestRefreshToken
 } from '../app/controllers/AccountController.js';
-router.get('/accounts', getAccounts);
+import middlewareController from '../middleware/middleware.js';
+router.get('/accounts', middlewareController.verifyToken, getAccounts);
 router.post('/accounts', addAccount);
+router.post('/login', loginUser);
 router.delete('/account/:id', deleteAccount);
+router.post('/refresh-token', requestRefreshToken);
 export default router;

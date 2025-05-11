@@ -1,6 +1,10 @@
 import Account from '../../models/Account.js';
 import bcrypt from 'bcrypt';
-
+import jwt from 'jsonwebtoken';
+import {
+  generateAccessToken,
+  generateRefreshToken
+} from '../../service/jwtService.js';
 export const getAccounts = async (req, res) => {
   try {
     const accounts = await Account.find();
@@ -37,26 +41,28 @@ export const loginUser = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: 'Tài khoản không tồn tại' });
     }
+
     const isMatch = await bcrypt.compare(req.body.password, user.password);
     if (!isMatch) {
       return res.status(400).json({ message: 'Sai mật khẩu' });
     }
-    if (user && isMatch) {
-      const accessToken = generateAccessToken(user);
-      const refreshToken = generateRefreshToken(user);
-      res.cookie('refreshToken', refreshToken, {
-        httpOnly: true,
-        secure: false, // khi deploy nên chuyển sang true
-        samSite: 'strict'
-      });
-      const { password, ...dataUser } = user._doc; // Không trả về mật khẩu nhầm tăng tính bảo mật
-      res.status(200).json({ ...dataUser, accessToken });
-    }
-    res.status(200).json({ message: 'Đăng nhập thành công', user });
+
+    const accessToken = generateAccessToken(user);
+    const refreshToken = generateRefreshToken(user);
+
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      secure: false,
+      sameSite: 'strict'
+    });
+
+    const { password, ...dataUser } = user._doc;
+    return res.status(200).json({ ...dataUser, accessToken }); // return để tránh gửi 2 response
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
+
 export const requestRefreshToken = async (req, res) => {
   // Take refresh token from user
   const refreshToken = req.cookies.refreshToken;
@@ -65,7 +71,6 @@ export const requestRefreshToken = async (req, res) => {
     if (err) {
       console.log(err);
     }
-
     // Create new accessToken, refresh token
     const newAccessToken = generateAccessToken(user);
     const newRefreshToken = generateRefreshToken(user);
