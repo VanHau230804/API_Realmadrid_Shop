@@ -91,3 +91,15 @@ export const deleteAccount = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+export const deleteAllAccounts = async (req, res) => {
+  try {
+    // Xóa tất cả các tài khoản trong collection
+    const result = await Account.deleteMany({});
+    res.status(200).json({
+      message: `Đã xóa thành công ${result.deletedCount} tài khoản`,
+      deletedCount: result.deletedCount
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
