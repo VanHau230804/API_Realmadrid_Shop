@@ -23,7 +23,13 @@ const accountSchema = new mongoose.Schema(
       required: true,
       trim: true,
       default: 'customer'
-    }
+    },
+    isVerified: {
+      type: Boolean,
+      default: false
+    },
+    emailVerificationToken: String,
+    emailVerificationExpires: Date
   },
   { timestamps: true, versionKey: false }
 );
