@@ -22,6 +22,17 @@ export const getKitByID = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+export const getKitsByCategoryID = async (req, res) => {
+  try {
+    const data = await Kit.find({ categoryID: req.params.id });
+    if (data.length < 0) {
+      return res.status(404).json({ message: 'No Kits found' });
+    }
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
 export const addKit = async (req, res) => {
   try {
     const data = await Kit(req.body).save();

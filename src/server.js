@@ -16,6 +16,7 @@ import kitRouter from './routes/Kit.js';
 import categoryRouter from './routes/Category.js';
 import newRouter from './routes/News.js';
 import accountRouter from './routes/Account.js';
+import cartRouter from './routes/Cart.js';
 //connect to DB
 dotenv.config();
 connectDB(process.env.MONGODB_URI);
@@ -35,6 +36,7 @@ app.use('/', kitRouter);
 app.use('/', categoryRouter);
 app.use('/', newRouter);
 app.use('/', accountRouter);
+app.use('/', cartRouter);
 const port = process.env.PORT || 8081;
 app.listen(port, () => {
   console.log(`App listening at http://localhost:${port}/kits`);

@@ -4,9 +4,13 @@ import {
   getKits,
   addKit,
   updateKit,
-  deleteKit
+  deleteKit,
+  getKitsByCategoryID,
+  getKitByID
 } from '../app/controllers/KitController.js';
 router.get('/kits', getKits);
+router.get('/kitcategory/:id', getKitsByCategoryID);
+router.get('/kit/:id', getKitByID);
 router.post('/kits', addKit);
 router.put('/kit/:id', updateKit);
 router.delete('/kit/:id', deleteKit);
