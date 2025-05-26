@@ -13,22 +13,51 @@ export const getCarts = async (req, res) => {
 };
 export const getCartByUserId = async (req, res) => {
   try {
-    const cart = await Cart.findOne({ userId: req.params.id }).populate(
-      'userId'
-    ); // Nếu muốn populate thông tin user
+    const cart = await Cart.find({ userId: req.params.id }).populate('userId'); // Nếu muốn populate thông tin user
 
     if (!cart) {
       return res.status(404).json({ message: 'Cart not found for this user' });
     }
-    res.status(200).json({
-      success: true,
-      data: cart
-    });
+    res.status(200).json(cart);
   } catch (error) {
     console.error('Error fetching cart:', error);
     res.status(500).json({
       success: false,
       error: 'Server error while fetching cart'
     });
+  }
+};
+export const addCart = async (req, res) => {
+  try {
+    const { items, userId } = req.body;
+    const cart = new Cart({ items, userId });
+    await cart.save();
+    res.status(201).json(cart);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+export const updateCart = async (req, res) => {
+  const { cartId, itemId } = req.params;
+  const { quantity } = req.body;
+
+  try {
+    // 1. Tìm giỏ hàng bằng _id
+    const cart = await Cart.findById(cartId);
+    if (!cart) return res.status(404).json({ error: 'Cart not found' });
+
+    // 2. Tìm item bằng _id
+    const item = cart.items.id(itemId);
+    if (!item) return res.status(404).json({ error: 'Item not found' });
+
+    // 3. Cập nhật số lượng
+    item.quantity = quantity;
+
+    // 4. Lưu vào database
+    await cart.save();
+
+    res.json({ success: true, cart });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 };

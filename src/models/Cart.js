@@ -1,6 +1,4 @@
 import mongoose from 'mongoose';
-import KitSchema from './Kit.js';
-
 const cartItemSchema = new mongoose.Schema({
   _id: {
     type: mongoose.Schema.Types.ObjectId,
@@ -32,6 +30,10 @@ const cartItemSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Category'
   },
+  quantity: {
+    type: Number,
+    default: 1
+  },
   isActive: {
     type: Number
   }
@@ -39,6 +41,11 @@ const cartItemSchema = new mongoose.Schema({
 
 const cartSchema = new mongoose.Schema(
   {
+    _id: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      auto: true
+    },
     items: [cartItemSchema],
     userId: {
       type: mongoose.Schema.Types.ObjectId,
