@@ -31,7 +31,6 @@ export const addAccount = async (req, res) => {
           message: 'Email này đã được đăng ký!'
         });
       }
-
       // Nếu tài khoản chưa xác nhận và token còn hạn
       const now = new Date();
       if (existingAccount.emailVerificationExpires > now) {
@@ -40,11 +39,9 @@ export const addAccount = async (req, res) => {
             'Email đã được đăng ký nhưng chưa xác nhận. Vui lòng kiểm tra email'
         });
       }
-
       // Nếu token hết hạn, xóa tài khoản cũ
       await Account.deleteOne({ _id: existingAccount._id });
     }
-
     // 3. Tạo tài khoản mới
     const hashedPassword = await bcrypt.hash(password, 10);
     const verificationToken = uuidv4();

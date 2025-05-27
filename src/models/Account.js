@@ -18,12 +18,15 @@ const accountSchema = new mongoose.Schema(
       required: true,
       trim: true
     },
-    role: {
-      type: String,
-      required: true,
-      trim: true,
-      default: 'customer'
-    },
+    role: [
+      {
+        type: String,
+        required: true,
+        trim: true,
+        enum: ['customer', 'editor', 'admin'],
+        default: 'customer'
+      }
+    ],
     isVerified: {
       type: Boolean,
       default: false

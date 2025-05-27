@@ -40,19 +40,15 @@ export const addCart = async (req, res) => {
 export const updateCart = async (req, res) => {
   const { cartId, itemId } = req.params;
   const { quantity } = req.body;
-
   try {
     // 1. Tìm giỏ hàng bằng _id
     const cart = await Cart.findById(cartId);
     if (!cart) return res.status(404).json({ error: 'Cart not found' });
-
     // 2. Tìm item bằng _id
     const item = cart.items.id(itemId);
     if (!item) return res.status(404).json({ error: 'Item not found' });
-
     // 3. Cập nhật số lượng
     item.quantity = quantity;
-
     // 4. Lưu vào database
     await cart.save();
 

@@ -6,7 +6,6 @@ const middlewareController = {
     if (authHeader) {
       const token = authHeader.split(' ')[1];
       console.log('token2 :', token);
-
       jwt.verify(token, process.env.JWT_ACCESS_KEY, (err, user) => {
         if (err) {
           return res.status(403).json({ message: 'token khong hop le' });
