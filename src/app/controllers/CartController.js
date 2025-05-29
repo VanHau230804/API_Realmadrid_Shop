@@ -29,12 +29,14 @@ export const getCartByUserId = async (req, res) => {
 };
 export const addCart = async (req, res) => {
   try {
-    const { items, userId } = req.body;
-    const cart = new Cart({ items, userId });
-    await cart.save();
-    res.status(201).json(cart);
+    const data = await Cart(req.body).save();
+    res.status(201).json({
+      message: 'cart created successfully',
+      cart: data
+    });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error('Error creating cart:', error);
+    res.status(500).json({ error: 'Failed to create cart' });
   }
 };
 export const updateCart = async (req, res) => {
@@ -55,5 +57,13 @@ export const updateCart = async (req, res) => {
     res.json({ success: true, cart });
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+};
+export const deleteCartById = async (req, res) => {
+  try {
+    const data = await Cart.deleteOne({ _id: req.params.id });
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 };

@@ -44,8 +44,7 @@ const orderSchema = new mongoose.Schema(
   {
     user: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Account',
-      required: true
+      ref: 'Account'
     },
     items: [orderItemSchema],
     shippingInfo: {
@@ -63,6 +62,13 @@ const orderSchema = new mongoose.Schema(
         type: String,
         required: true,
         trim: true
+      },
+      email: {
+        type: String,
+        required: true,
+        trim: true,
+        lowercase: true,
+        match: /.+\@.+\..+/
       }
     },
     totalPrice: {
