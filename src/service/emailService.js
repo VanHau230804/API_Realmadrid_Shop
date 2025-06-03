@@ -49,3 +49,29 @@ export const sendVerificationEmail = async (email, verificationToken) => {
     throw new Error(`Không thể gửi email xác nhận: ${error.message}`);
   }
 };
+export const sendOrderEmail = async (email, order) => {
+  const confirmUrl = `http://localhost:8080/orders/confirm-email?orderId=${order._id}`;
+  try {
+    const mailOptions = {
+      from: `Shop ABC 👕 <${process.env.EMAIL_USER}>`,
+      to: email,
+      subject: 'Xác nhận đơn hàng của bạn',
+      html: `
+        <h2>Xin chào ${order.shippingInfo.fullName},</h2>
+        <p>Chúng tôi đã nhận được đơn hàng của bạn</p>
+        <p><strong>Tổng tiền:</strong> ${order.totalPrice.toLocaleString()} VND</p>
+        <p>Địa chỉ giao hàng: ${order.shippingInfo.address}</p>
+        <a href="${confirmUrl}" style="padding:10px 15px;background:#28a745;color:#fff;text-decoration:none;">
+          Xác nhận đơn hàng
+        </a>
+        <p>Nếu không phải bạn, vui lòng bỏ qua email này.</p>
+      `
+    };
+
+    await transporter.verify();
+    const info = await transporter.sendMail(mailOptions);
+    console.log('📧 Email xác nhận đơn hàng đã được gửi!', info.messageId);
+  } catch (err) {
+    console.error('❌ Gửi email xác nhận đơn hàng thất bại:', err);
+  }
+};

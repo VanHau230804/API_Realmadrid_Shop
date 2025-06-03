@@ -99,12 +99,7 @@ const orderSchema = new mongoose.Schema(
       maxlength: 500
     }
   },
-  {
-    timestamps: true,
-    versionKey: false,
-    toJSON: { virtuals: true },
-    toObject: { virtuals: true }
-  }
+  { timestamps: true, versionKey: false }
 );
 
 const Order = mongoose.model('Order', orderSchema);

@@ -23,13 +23,23 @@ const accountSchema = new mongoose.Schema(
         type: String,
         required: true,
         trim: true,
-        enum: ['customer', 'editor', 'admin'],
-        default: 'customer'
+        enum: ['user', 'admin'],
+        default: 'user'
       }
     ],
+    address: { type: String, default: null },
+    phone: { type: String, default: null },
+    fullName: { type: String, default: null },
     isVerified: {
       type: Boolean,
       default: false
+    },
+    isActive: {
+      type: String,
+      required: true,
+      trim: true,
+      enum: ['active', 'inactive', 'disabled'],
+      default: 'active'
     },
     emailVerificationToken: String,
     emailVerificationExpires: Date

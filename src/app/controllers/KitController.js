@@ -71,7 +71,6 @@ export const updateKit = async (req, res) => {
 
       return res.status(200).json(updatedKit);
     } else {
-      // Nếu danh mục mới trùng với danh mục cũ, chỉ cần cập nhật thông tin sản phẩm
       const updatedKit = await Kit.findByIdAndUpdate(kitId, req.body, {
         new: true
       });

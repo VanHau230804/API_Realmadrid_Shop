@@ -7,6 +7,7 @@ import {
   generateAccessToken,
   generateRefreshToken
 } from '../../service/jwtService.js';
+import { Query } from 'mongoose';
 export const getAccounts = async (req, res) => {
   try {
     const accounts = await Account.find();
@@ -52,6 +53,7 @@ export const addAccount = async (req, res) => {
       email,
       username,
       password: hashedPassword,
+      role: 'user',
       emailVerificationToken: verificationToken,
       emailVerificationExpires: verificationExpires,
       isVerified: false
@@ -129,6 +131,36 @@ export const requestRefreshToken = async (req, res) => {
     });
     res.status(200).json({ accessToken: newAccessToken });
   });
+};
+export const getUserByID = async (req, res) => {
+  try {
+    const data = await Account.find({ _id: req.params.id });
+    console.log(data);
+    if (data.length < 0) {
+      return res.status(404).json({ message: 'No User found' });
+    }
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+export const updateUser = async (req, res) => {
+  try {
+    const response = await Account.findOneAndUpdate(
+      { _id: req.params.id },
+      { $set: req.body }, // ✅ Đảm bảo dùng $set
+      {
+        new: true,
+        runValidators: true // ✅ Bắt buộc nếu dùng enum
+      }
+    );
+    if (!response) {
+      return res.status(404).json({ message: 'Account not found' });
+    }
+    res.status(200).json(response);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 };
 
 export const deleteAccount = async (req, res) => {
