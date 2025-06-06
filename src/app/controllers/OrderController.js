@@ -65,10 +65,9 @@ export const getAllOrder = async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch orders' });
   }
 };
-export const getOrderByIdUser = async (req, res) => {
+export const getOrderById = async (req, res) => {
   try {
-    const order = await Order.find({ user: req.params.id }).populate('user'); // Nếu muốn populate thông tin user
-
+    const order = await Order.findOne({ _id: req.params.id });
     if (!order) {
       return res.status(404).json({ message: 'order not found for this user' });
     }
@@ -79,6 +78,36 @@ export const getOrderByIdUser = async (req, res) => {
       success: false,
       error: 'Server error while fetching order'
     });
+  }
+};
+export const getOrderByIdUser = async (req, res) => {
+  try {
+    const order = await Order.find({ user: req.params.id }).populate('user'); // Nếu muốn populate thông tin user
+    if (!order) {
+      return res.status(404).json({ message: 'order not found for this user' });
+    }
+    res.status(200).json(order);
+  } catch (error) {
+    console.error('Error fetching order:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Server error while fetching order'
+    });
+  }
+};
+export const updateOrder = async (req, res) => {
+  try {
+    const data = await Order.findOneAndUpdate(
+      { _id: req.params.id },
+      req.body,
+      { new: true }
+    );
+    if (!data) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+    res.status(200).json({ message: 'Order update successfully', data: data });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to update order' });
   }
 };
 export const deleteOrderById = async (req, res) => {
