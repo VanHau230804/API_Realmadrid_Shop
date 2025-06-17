@@ -35,52 +35,88 @@ export const getKitsByCategoryID = async (req, res) => {
 };
 export const addKit = async (req, res) => {
   try {
-    const data = await Kit(req.body).save();
-    if (req.body.categoryID) {
-      const category = Category.findById(req.body.categoryID);
-      await category.updateOne({ $push: { kitID: data._id } });
-    }
-    res.status(201).json(data);
+    const { name, price, size, categoryID } = req.body;
+    const sizeArray = size.split(',').map(s => ({ label: s.trim() }));
+    const images = req.files.map(file => ({
+      url: `${req.protocol}://${req.get('host')}/images/${file.filename}`
+    }));
+
+    const newKit = new Kit({
+      name,
+      price,
+      size: sizeArray,
+      images,
+      categoryID
+    });
+    await newKit.save();
+    res.status(201).json({ message: 'Thêm thành công', kit: newKit });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error(error);
+    res.status(500).json({ error: 'Lỗi server', detail: error.message });
   }
 };
 export const updateKit = async (req, res) => {
   try {
     const kitId = req.params.id;
-    const newCategoryId = req.body.categoryID;
-    // get category old of Kit
-    const kit = await Kit.findById(kitId);
-    const oldCategoryId = kit.categoryID;
-    // if new category unduplicated with category old, handle update
-    if (oldCategoryId.toString() !== newCategoryId) {
-      // 1. Cập nhật sản phẩm với danh mục mới
-      const updatedKit = await Kit.findByIdAndUpdate(KitId, req.body, {
-        new: true
-      });
+    const { name, price, size, categoryID } = req.body;
 
-      // 2. Xóa sản phẩm khỏi danh sách sản phẩm cũ của danh mục cũ
+    const kit = await Kit.findById(kitId);
+    if (!kit) {
+      return res.status(404).json({ error: 'Không tìm thấy sản phẩm' });
+    }
+
+    // Chuyển size từ string sang mảng { label }
+    const sizeArray = size
+      ? size.split(',').map(s => ({ label: s.trim() }))
+      : kit.size;
+
+    // Nếu có ảnh mới
+    let images = kit.images; // giữ ảnh cũ mặc định
+    if (req.files && req.files.length > 0) {
+      images = req.files.map(file => ({
+        url: `${req.protocol}://${req.get('host')}/images/${file.filename}`
+      }));
+    }
+
+    // So sánh danh mục cũ và mới
+    const oldCategoryId = kit.categoryID;
+    const isCategoryChanged = oldCategoryId.toString() !== categoryID;
+
+    // Cập nhật sản phẩm
+    const updatedKit = await Kit.findByIdAndUpdate(
+      kitId,
+      {
+        name: name || kit.name,
+        price: price || kit.price,
+        size: sizeArray,
+        images,
+        categoryID: categoryID || kit.categoryID
+      },
+      { new: true }
+    );
+
+    // Nếu thay đổi danh mục thì cập nhật lại quan hệ
+    if (isCategoryChanged) {
+      // Xóa khỏi danh mục cũ
       await Category.findByIdAndUpdate(oldCategoryId, {
         $pull: { kitID: kitId }
       });
 
-      // 3. Thêm sản phẩm vào danh sách sản phẩm mới của danh mục mới
-      await Category.findByIdAndUpdate(newCategoryId, {
+      // Thêm vào danh mục mới
+      await Category.findByIdAndUpdate(categoryID, {
         $addToSet: { kitID: kitId }
       });
-
-      return res.status(200).json(updatedKit);
-    } else {
-      const updatedKit = await Kit.findByIdAndUpdate(kitId, req.body, {
-        new: true
-      });
-
-      return res.status(200).json(updatedKit);
     }
+
+    return res
+      .status(200)
+      .json({ message: 'Cập nhật thành công', kit: updatedKit });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error(error);
+    res.status(500).json({ error: 'Lỗi server', detail: error.message });
   }
 };
+
 export const deleteKit = async (req, res) => {
   try {
     await Category.updateMany(

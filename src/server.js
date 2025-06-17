@@ -32,6 +32,7 @@ app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(morgan('combined'));
+app.use('/images', express.static(path.join(__dirname, 'public/images')));
 
 // Route
 app.use('/', kitRouter);
