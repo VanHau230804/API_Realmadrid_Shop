@@ -24,7 +24,11 @@ export const getNewById = async (req, res) => {
 };
 export const addNew = async (req, res) => {
   try {
-    const newNews = new New(req.body);
+    const { name, content } = req.body;
+    const images = req.files.map(file => ({
+      url: `${req.protocol}://${req.get('host')}/images/${file.filename}`
+    }));
+    const newNews = new New({ name, images, content });
     await newNews.save();
     res.status(201).json(newNews);
   } catch (error) {
@@ -33,13 +37,30 @@ export const addNew = async (req, res) => {
 };
 export const updateNew = async (req, res) => {
   try {
-    const data = await New.findByIdAndUpdate({ _id: req.params.id }, req.body, {
-      new: true
-    });
-    if (data.length < 0) {
+    const newsId = req.params.id;
+    const { name, content } = req.body;
+    const news = await New.findById(newsId);
+    if (!news) {
       return res.status(404).json({ message: 'News not found' });
     }
-    res.status(200).json(data);
+    let images = New.images;
+    if (req.files && req.files.length > 0) {
+      images = req.files.map(file => ({
+        url: `${req.protocol}://${req.get('host')}/images/${file.filename}`
+      }));
+    }
+    const updateNews = await New.findByIdAndUpdate(
+      { _id: req.params.id },
+      {
+        name: name || news.name,
+        content: content || news.content,
+        images
+      },
+      { new: true }
+    );
+    return res
+      .status(200)
+      .json({ message: 'Cập nhật thành công', new: updateNews });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
