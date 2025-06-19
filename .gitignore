@@ -2,4 +2,5 @@
 npm-debug.log*
 node_modules
 .vscode
-src/public/images/
+/public/images/
+*.log
