@@ -8,6 +8,8 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import { Server } from 'socket.io';
+import { createServer } from 'http';
 // Giả lập lại __dirname trong ES Module
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -19,10 +21,22 @@ import accountRouter from './routes/Account.js';
 import cartRouter from './routes/Cart.js';
 import orderRouter from './routes/Order.js';
 import uploadRouter from './routes/Upload.js';
+import chatboxRouter from './routes/Chatbox.js';
+import { handleSocketConnection } from './app/controllers/ChatBoxController.js';
 //connect to DB
 dotenv.config();
 connectDB(process.env.MONGODB_URI);
 // Cấu hình template engine
+const server = createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: process.env.CLIENT_URL || 'http://localhost:5173',
+    methods: ['GET', 'POST']
+  }
+});
+// Socket.io
+handleSocketConnection(io);
+
 app.engine('hbs', engine({ extname: '.hbs' }));
 app.set('view engine', 'hbs');
 app.set('views', path.join(__dirname, 'resources', 'views'));
@@ -42,7 +56,10 @@ app.use('/', accountRouter);
 app.use('/', cartRouter);
 app.use('/', orderRouter);
 app.use('/', uploadRouter);
+app.use('/', chatboxRouter);
 const port = process.env.PORT || 8081;
-app.listen(port, () => {
-  console.log(`App listening at http://localhost:${port}/kits`);
+server.listen(port, () => {
+  console.log(
+    `Server (with Socket.IO) listening at http://localhost:${port}/kits`
+  );
 });
